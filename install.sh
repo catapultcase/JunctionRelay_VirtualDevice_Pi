@@ -137,8 +137,8 @@ echo "[6/6] Setting up systemd service..."
 cat > /etc/systemd/system/${SERVICE_NAME}.service <<EOFSERVICE
 [Unit]
 Description=JunctionRelay VirtualDevice
-After=graphical.target network.target
-Wants=graphical.target
+After=graphical.target network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -146,6 +146,7 @@ User=${ACTUAL_USER}
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/${ACTUAL_USER}/.Xauthority
 WorkingDirectory=${INSTALL_DIR}
+ExecStartPre=/bin/sleep 5
 ExecStart=/bin/bash ${INSTALL_DIR}/start-with-browser.sh
 Restart=always
 RestartSec=10
@@ -153,7 +154,7 @@ StandardOutput=journal
 StandardError=journal
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target
 EOFSERVICE
 
 systemctl daemon-reload
