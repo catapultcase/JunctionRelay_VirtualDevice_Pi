@@ -10,7 +10,7 @@ Flash standard Raspberry Pi OS (64-bit Desktop), then run:
 curl -fsSL https://raw.githubusercontent.com/catapultcase/JunctionRelay_VirtualDevice_Pi/main/install.sh | sudo bash
 ```
 
-That's it! JunctionRelay is now running at `http://localhost:8086/webui/`
+That's it! JunctionRelay will auto-open Chromium to the WebUI on boot.
 
 ## What This Does
 
@@ -18,6 +18,7 @@ That's it! JunctionRelay is now running at `http://localhost:8086/webui/`
 - Downloads latest JunctionRelay release
 - Installs to `/opt/junctionrelay-virtualdevice`
 - Creates systemd service (auto-starts on boot)
+- Auto-opens Chromium to WebUI on graphical session
 - Works with any username you choose in Pi Imager
 
 ## Requirements
@@ -34,7 +35,7 @@ That's it! JunctionRelay is now running at `http://localhost:8086/webui/`
 
 2. **Boot your Pi** and run the install command above
 
-3. **Access WebUI** at `http://localhost:8086/webui/`
+3. **Access WebUI** at `http://localhost:8086/`
 
 ## Management Commands
 
@@ -77,7 +78,7 @@ The updater will:
 
 **Access from other devices:**
 ```
-http://<pi-ip-address>:8086/webui/
+http://<pi-ip-address>:8086/
 ```
 
 ## Troubleshooting

@@ -90,20 +90,23 @@ echo "[6/6] Setting up systemd service..."
 cat > /etc/systemd/system/${SERVICE_NAME}.service <<EOFSERVICE
 [Unit]
 Description=JunctionRelay VirtualDevice
-After=network.target
+After=graphical.target network.target
+Wants=graphical.target
 
 [Service]
 Type=simple
 User=${ACTUAL_USER}
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/${ACTUAL_USER}/.Xauthority
 WorkingDirectory=${INSTALL_DIR}
-ExecStart=/usr/bin/node ${INSTALL_DIR}/launcher.js --headless
+ExecStart=/usr/bin/node ${INSTALL_DIR}/launcher.js
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target
 EOFSERVICE
 
 systemctl daemon-reload
@@ -126,7 +129,8 @@ echo ""
 echo "Service status:"
 systemctl status ${SERVICE_NAME}.service --no-pager | head -n 10
 echo ""
-echo "Access WebUI at: http://localhost:8086/webui/"
+echo "Chromium will auto-open to WebUI on next graphical session"
+echo "Or access manually at: http://localhost:8086/"
 echo ""
 echo "Management commands:"
 echo "  sudo systemctl status $SERVICE_NAME      # Check status"
