@@ -82,6 +82,47 @@ fi
 
 mkdir -p "$INSTALL_DIR"
 cp -r ./* "$INSTALL_DIR/"
+
+# Create startup script
+cat > "$INSTALL_DIR/start-with-browser.sh" <<'EOFSTARTUP'
+#!/bin/bash
+# JunctionRelay VirtualDevice - Start with Chromium Browser
+
+INSTALL_DIR="/opt/junctionrelay-virtualdevice"
+WEBUI_URL="http://localhost:8086/"
+
+# Start backend in background
+cd "$INSTALL_DIR"
+node launcher.js &
+LAUNCHER_PID=$!
+
+# Wait for backend to be ready (max 30 seconds)
+for i in {1..60}; do
+    if curl -s http://localhost:8086/api/health > /dev/null 2>&1; then
+        break
+    fi
+    sleep 0.5
+done
+
+# Open Chromium if DISPLAY is available
+if [ -n "$DISPLAY" ]; then
+    chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --app="$WEBUI_URL" &
+    CHROMIUM_PID=$!
+fi
+
+# Wait for launcher process
+wait $LAUNCHER_PID
+EXIT_CODE=$?
+
+# Kill Chromium when launcher exits
+if [ -n "$CHROMIUM_PID" ]; then
+    kill $CHROMIUM_PID 2>/dev/null
+fi
+
+exit $EXIT_CODE
+EOFSTARTUP
+
+chmod +x "$INSTALL_DIR/start-with-browser.sh"
 chown -R ${ACTUAL_USER}:${ACTUAL_USER} "$INSTALL_DIR"
 echo "  ✓ Files installed"
 echo ""
@@ -99,7 +140,7 @@ User=${ACTUAL_USER}
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/${ACTUAL_USER}/.Xauthority
 WorkingDirectory=${INSTALL_DIR}
-ExecStart=/usr/bin/node ${INSTALL_DIR}/launcher.js
+ExecStart=/bin/bash ${INSTALL_DIR}/start-with-browser.sh
 Restart=always
 RestartSec=10
 StandardOutput=journal

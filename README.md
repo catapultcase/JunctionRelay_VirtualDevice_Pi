@@ -106,13 +106,7 @@ sudo systemctl status junctionrelay
 sudo netstat -tlnp | grep 8086
 ```
 
-## Resources
+## Support
 
-- **Main Project:** [JunctionRelay_VirtualDevice](https://github.com/catapultcase/JunctionRelay_VirtualDevice)
-- **Website:** [junctionrelay.com](https://junctionrelay.com)
 - **Issues:** [GitHub Issues](https://github.com/catapultcase/JunctionRelay_VirtualDevice_Pi/issues)
-- **Full Documentation:** [Pi Installation Guide](https://github.com/catapultcase/JunctionRelay_VirtualDevice/blob/main/docs/pi-installation.md)
-
-## License
-
-Same as main JunctionRelay VirtualDevice project.
+- **Website:** [junctionrelay.com](https://junctionrelay.com)
