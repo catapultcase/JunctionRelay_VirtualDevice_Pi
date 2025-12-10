@@ -106,8 +106,14 @@ done
 
 # Open Chromium if DISPLAY is available
 if [ -n "$DISPLAY" ]; then
-    chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --app="$WEBUI_URL" &
-    CHROMIUM_PID=$!
+    # Try chromium (Raspberry Pi OS) or chromium-browser (older versions)
+    if command -v chromium &> /dev/null; then
+        chromium --kiosk --noerrdialogs --disable-infobars --no-first-run --app="$WEBUI_URL" &
+        CHROMIUM_PID=$!
+    elif command -v chromium-browser &> /dev/null; then
+        chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --app="$WEBUI_URL" &
+        CHROMIUM_PID=$!
+    fi
 fi
 
 # Wait for launcher process
