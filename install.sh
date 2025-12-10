@@ -91,7 +91,16 @@ cat > "$INSTALL_DIR/start-with-browser.sh" <<'EOFSTARTUP'
 INSTALL_DIR="/opt/junctionrelay-virtualdevice"
 WEBUI_URL="http://localhost:8086/"
 
-# Start backend in background
+# Cleanup function
+cleanup() {
+    if [ -n "$CHROMIUM_PID" ]; then
+        kill $CHROMIUM_PID 2>/dev/null
+    fi
+}
+
+trap cleanup EXIT SIGTERM SIGINT
+
+# Start backend
 cd "$INSTALL_DIR"
 node launcher.js &
 LAUNCHER_PID=$!
@@ -118,14 +127,7 @@ fi
 
 # Wait for launcher process
 wait $LAUNCHER_PID
-EXIT_CODE=$?
-
-# Kill Chromium when launcher exits
-if [ -n "$CHROMIUM_PID" ]; then
-    kill $CHROMIUM_PID 2>/dev/null
-fi
-
-exit $EXIT_CODE
+exit $?
 EOFSTARTUP
 
 chmod +x "$INSTALL_DIR/start-with-browser.sh"
@@ -146,12 +148,14 @@ User=${ACTUAL_USER}
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/${ACTUAL_USER}/.Xauthority
 WorkingDirectory=${INSTALL_DIR}
-ExecStartPre=/bin/sleep 5
 ExecStart=/bin/bash ${INSTALL_DIR}/start-with-browser.sh
-Restart=always
+Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
 
 [Install]
 WantedBy=multi-user.target
