@@ -83,6 +83,12 @@ fi
 mkdir -p "$INSTALL_DIR"
 cp -r ./* "$INSTALL_DIR/"
 
+# Copy update.sh to root of install dir and make executable
+if [ -f "$INSTALL_DIR/scripts/update.sh" ]; then
+    cp "$INSTALL_DIR/scripts/update.sh" "$INSTALL_DIR/update.sh"
+    chmod +x "$INSTALL_DIR/update.sh"
+fi
+
 # Create startup script
 cat > "$INSTALL_DIR/start-with-browser.sh" <<'EOFSTARTUP'
 #!/bin/bash
